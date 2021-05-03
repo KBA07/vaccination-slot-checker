@@ -13,8 +13,8 @@ def run_main(retry_after, age, date, pincode=None, state_name=None, district_nam
         if centres:
             LOG.info(f"Got {len(centres)} centres for vaccination")
             LOG.info(json.dumps(centres, indent=4))
-        else:
-            LOG.info(f"Didn't find any centres for vaccination")
+            break
+        LOG.info(f"Didn't find any centres for vaccination")
         time.sleep(retry_after)
 
 
