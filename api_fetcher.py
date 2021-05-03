@@ -49,7 +49,7 @@ class APIFetcher(object):
 
     def get_centres_after_age_filter(self):
         centres = self.get_slots()
-
+        # LOG.debug(centres)
         if not centres:
             return centres
 
