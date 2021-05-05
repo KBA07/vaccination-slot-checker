@@ -2,12 +2,14 @@ import sys
 import json
 import requests
 
+import copy
+
 from logger import LOG
 
 
 class APIFetcher(object):
     COWIN_HOST = "https://cdn-api.co-vin.in/"
-    CAPACATY_AT_LEAST = 1
+    CAPACATY_AT_LEAST = 3
 
     URI_GET_STATES = "api/v2/admin/location/states"
     URI_GET_DISTRICTS = "api/v2/admin/location/districts/{state_id}"
@@ -59,11 +61,11 @@ class APIFetcher(object):
             age_sessions = []
             for session in centre["sessions"]:
                 if session['min_age_limit'] <= self.age and session['available_capacity'] >= APIFetcher.CAPACATY_AT_LEAST:
-                    age_sessions.append(session)
+                    age_sessions.append(copy.deepcopy(session))
         
             if age_sessions:
                 centre["session"] = age_sessions
-                age_centres.append(centre)
+                age_centres.append(copy.deepcopy(centre))
         
         return age_centres
 
