@@ -14,20 +14,23 @@ def run_main(retry_after, age, date, pincode=None, state_name=None, district_nam
         mailer_obj = Mailer(sender_email, sender_password)
     
     while True:
-        centres = apiObj.get_centres_after_age_filter()
-        if centres:
-            subject = f"Got {len(centres)} centres for vaccination"
-            LOG.info(subject)
-            body = json.dumps(centres, indent=4)
-            LOG.info(body)
+        try:
+            centres = apiObj.get_centres_after_age_filter()
+            if centres:
+                subject = f"Got {len(centres)} centres for vaccination"
+                LOG.info(subject)
+                body = json.dumps(centres, indent=4)
+                LOG.info(body)
 
-            if mailer_obj:
-                mailer_obj.send_mail(subject, reciever_email, body)
+                if mailer_obj:
+                    mailer_obj.send_mail(subject, reciever_email, body)
 
-            sys.exit(0)
-            
-        LOG.info(f"Didn't find any centres for vaccination")
-        time.sleep(retry_after)
+                sys.exit(0)
+                
+            LOG.info(f"Didn't find any centres for vaccination")
+            time.sleep(retry_after)
+        except Exception:
+            LOG.exception("Exception occurred while fetching, Re running the program")
 
 
 if __name__ == "__main__":
