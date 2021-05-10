@@ -1,5 +1,6 @@
 import sys
 import json
+
 import requests
 
 import copy
@@ -8,8 +9,9 @@ from logger import LOG
 
 
 class APIFetcher(object):
-    COWIN_HOST = "https://cdn-api.co-vin.in/"
-    CAPACATY_AT_LEAST = 3
+    COWIN_DOMAIN = "cdn-api.co-vin.in"
+    COWIN_HOST = f"https://{COWIN_DOMAIN}/"
+    CAPACATY_AT_LEAST = 1
 
     URI_GET_STATES = "api/v2/admin/location/states"
     URI_GET_DISTRICTS = "api/v2/admin/location/districts/{state_id}"
@@ -39,15 +41,24 @@ class APIFetcher(object):
     @staticmethod
     def _fetch_api(uri, params=None):
         url = APIFetcher.COWIN_HOST + uri
-        resp = requests.get(url, params=params)
-        content = {}
+        headers = {
+            'Host': APIFetcher.COWIN_DOMAIN, # Hack faking to be sent over website
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36' # Hack, faking it to be a browsers request
+        }
+        LOG.info(f"Headers are {headers}")
+        resp = requests.get(url, params=params, headers=headers)
         if resp.status_code == 200:
             try:
-                content = json.loads(resp.content)
+                return json.loads(resp.content)
             except Exception:
                 LOG.exception(f"Exception occurred while fetching the API {uri}")
                 sys.exit(1)
-        return content
+        LOG.error("Error occurred while fetching the API")
+        LOG.info(f"Request headers are {resp.request.headers}")
+        LOG.info(f"Resp status code are {resp.status_code}")
+        LOG.info(f"Resp headers are {resp.headers}")
+        LOG.info(f"Resp content are {resp.content}")
+        sys.exit(1)
 
     def get_centres_after_age_filter(self):
         centres = self.get_slots()

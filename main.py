@@ -8,6 +8,7 @@ from logger import LOG
 
 def run_main(retry_after, age, date, pincode=None, state_name=None, district_name=None, sender_email=None, sender_password=None, reciever_email=None):
     apiObj = APIFetcher(age, date, pincode, state_name, district_name)
+    apiObj.district_id = 294
 
     mailer_obj = None
     if sender_email and sender_password and reciever_email:
